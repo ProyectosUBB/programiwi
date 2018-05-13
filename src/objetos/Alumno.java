@@ -11,7 +11,7 @@ import static ayudas.Tais.capitalizar;
  * Representa a un alumno. Los alumnos podrían tener ramos inscritos en el pasado. Su información
  * se encuentra almacenada en una Tupla, que perfectamente podría venir desde la base de datos.
  *
- * @version     2.1.1 (12/05/2018)
+ * @version     2.1.2 (12/05/2018)
  * @author      Anibal Llanos Prado
  */
 public class Alumno {
@@ -94,8 +94,18 @@ public class Alumno {
      * @param   columna El nombre de la columna que almacena el valor a consultar.
      * @return Un String cuyo valor es el que se almacena en la columna de la tupla.
      */
-    String columna(String columna) {
+    public String columna(String columna) {
         return alumno.columna(columna);
+    }
+
+
+    /**
+     * Determina si se encontró un alumno coincidente en la base de datos al crear el objeto.
+     *
+     * @return True si existe un usuario coincidente. False si no.
+     */
+    public boolean existe() {
+        return alumno != null;
     }
 
 }

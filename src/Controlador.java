@@ -1,5 +1,6 @@
 import bd.Tabla;
 import bd.Tupla;
+import objetos.Alumno;
 import objetos.Inscripcion;
 
 import java.io.BufferedReader;
@@ -12,7 +13,7 @@ import static ayudas.Tais.*;
 /**
  * Interfaz de comunicación entre la línea de comandos y la inscripción de ramos.
  *
- * @version     2.1.1 (12/05/2018)
+ * @version     2.1.2 (12/05/2018)
  * @author      Anibal Llanos Prado
  */
 class Controlador {
@@ -43,10 +44,9 @@ class Controlador {
      * @throws IOException Errores de entrada de teclado.
      * @throws SQLException Errores de consulta SQL.
      */
-    Tupla ingresarRut() throws IOException, SQLException {
+    Alumno ingresarRut() throws IOException, SQLException {
         String rut = input(">> Ingrese el RUT del alumno (sin puntos ni dígito verificador): ", lector);
-        Tabla alumnos = new Tabla("usuario");
-        return alumnos.buscarPrimero("rut", rut);
+        return new Alumno(rut);
     }
 
 

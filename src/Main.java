@@ -1,4 +1,3 @@
-import bd.Tupla;
 import objetos.Alumno;
 
 import java.io.IOException;
@@ -9,7 +8,7 @@ import static ayudas.Tais.print;
 /**
  * Clase que maneja el ciclo de interacción. Puede ser reemplazada por una GUI.
  *
- * @version     2.1 (12/05/2018)
+ * @version     2.1.1 (12/05/2018)
  * @author      Anibal Llanos Prado
  */
 public class Main {
@@ -24,19 +23,18 @@ public class Main {
     public static void main(String[] argv) throws IOException, SQLException {
 
         /* Instanciación e inicialización */
-        Tupla usuario;
+        Alumno alumno;
         String[] comando;
         Controlador controlador = new Controlador();
 
         /* Captura de RUTs para inscribir ramos */
         print("SISTEMA DE INSCRIPCIÓN DE RAMOS\n");
         do {
-            usuario = controlador.ingresarRut();
-        } while (usuario == null);
+            alumno = controlador.ingresarRut();
+        } while (!alumno.existe());
 
         /* Inicialización de la inscripción */
-        controlador.inicializar(usuario.columna("rut"));
-        Alumno alumno = new Alumno(usuario.columna("rut"));
+        controlador.inicializar(alumno.columna("rut"));
         print("Alumno encontrado! [" + alumno.nombreCompleto() + "]\n");
 
         /* Ciclo de ingreso de comandos
