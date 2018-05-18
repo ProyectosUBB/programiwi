@@ -3,6 +3,7 @@ package bd;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import static ayudas.Tais.print;
 
@@ -12,10 +13,13 @@ import static ayudas.Tais.print;
  * a través de SQL.
  * PUEDE SER IMPLEMENTADA CON PATRON BUILDER!!!
  *
- * @version     2.1 (12/05/2018)
+ * @version     2.2 (18/05/2018)
  * @author      Anibal Llanos Prado
  */
 public class BaseDeDatos {
+
+    /* FORMATOS DE CONSULTAS */
+    private final String FORMATO_INSERTAR = "INSERT INTO `%s` (%s) VALUES (%s)";
 
     /* VARIABLES DE INSTANCIA */
     private Connection conexion;
@@ -26,7 +30,7 @@ public class BaseDeDatos {
      *
      * @throws SQLException Si se generan errores de SQL
      */
-    public BaseDeDatos() throws SQLException {
+    BaseDeDatos() throws SQLException {
         String[][] opciones_arreglo = {     /* Opciones para entregar a la URL del driver */
                 {"useUnicode", "true"},
                 {"useJDBCCompliantTimezoneShift", "true"},
@@ -83,13 +87,56 @@ public class BaseDeDatos {
      *
      * @param consulta Consulta SQL a procesar.
      */
-    public void actualizar(String consulta) {
+    private boolean actualizar(String consulta) {
         try {
             Statement s = conexion.createStatement();
             s.executeUpdate(consulta);
+            return true;
         } catch (Exception e) {
             print("Error al insertar entrada en la base de datos!");
             e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    /**
+     * Inserta una tabla en la base de datos.
+     *
+     * @param   tabla   Una tabla (Tabla) con tuplas que se desean insertar.
+     * @since   2.2
+     */
+    void insertar(Tabla tabla) {
+        ArrayList<Tupla> tuplas = tabla.obtenerTuplas();    /* Variables */
+        int tuplasInsertadas = 0;
+        int tuplasError = 0;
+
+        if (tuplas.size() == 0) {
+            print("Se ha intentado insertar una tabla sin tuplas en la base de datos.");
+        } else {
+            StringBuilder columnasArreglo = new StringBuilder();
+            StringBuilder valoresArreglo = new StringBuilder();
+            HashMap<String, String> tuplaMapa;
+            for (Tupla tupla : tuplas) {    /* Iterar sobre las tuplas */
+                tuplaMapa = tupla.obtenerColumnas();
+                for (Map.Entry<String, String> entrada : tuplaMapa.entrySet()) {    /*Iterar sobre las columnas. */
+                    columnasArreglo.append(",`").append(entrada.getKey()).append("`");
+                    valoresArreglo.append(",'").append(entrada.getValue()).append("'");
+                }
+                String consulta = String.format(    /* Se construye la consulta usando el formato de inserción. */
+                        FORMATO_INSERTAR,
+                        tabla.obtenerNombre(),
+                        columnasArreglo.toString(),
+                        valoresArreglo.toString()
+                );
+                if (actualizar(consulta)) {     /* Se ejecuta la consulta y se incrementan los contadores. */
+                    ++tuplasInsertadas;
+                } else {
+                    ++tuplasError;
+                }
+            }
+            print(tuplasInsertadas + " tuplas fueron insertadas exitosamente");
+            print(tuplasError + " no se insertaron (error).");
         }
     }
 

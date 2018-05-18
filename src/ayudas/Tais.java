@@ -9,7 +9,7 @@ import java.io.IOException;
  * simplificar la notación de algunas funciones que puedan resultar en pérdida de legibilidad
  * o simplemente porque creo que se ve más bonito.
  *
- * @version     2.1 (12/05/2018)
+ * @version     2.2.1 (18/05/2018)
  * @author      Anibal Llanos Prado
  *
  */
@@ -26,6 +26,7 @@ public class Tais {
      * Imprime en consola. Simplifica la sintaxis. Corresponde a un print CON salto de línea.
      *
      * @param   string El String que se desea escribir.
+     * @since   2.1
      */
     public static void print(String string) {
         System.out.println(string);
@@ -33,24 +34,11 @@ public class Tais {
 
 
     /**
-     * Captura una entrada desde el teclado y devuelve su valor.
-     *
-     * @param   mensaje El mensaje que se desea imprimir.
-     * @param   lector  El lector en buffer para capturar el teclado.
-     * @return El String capturado desde el teclado.
-     * @throws IOException Errores con la entrada de teclado.
-     */
-    public static String input(String mensaje, BufferedReader lector) throws IOException {
-        System.out.print(mensaje);
-        return lector.readLine();
-    }
-
-
-    /**
      * Vuelve en mayúsculas la primera letra de cada palabra en una frase.
      *
      * @param   palabras    Frase a capitalizar.
-     * @return La frase ya capitalizada (palabra a palabra).
+     * @return  La frase ya capitalizada (palabra a palabra).
+     * @since   2.1
      */
     public static String capitalizarTodo(String palabras) {
         String[] palabraArreglo = palabras.split(" ");
@@ -65,8 +53,9 @@ public class Tais {
      * Capitaliza un texto. Sólo capitaliza la primera letra.
      * DEBE DESAPARECER!
      *
-     * @param palabra El tecto a capitalizar.
-     * @return La frase capitalizada.
+     * @param   palabra El tecto a capitalizar.
+     * @return  La frase capitalizada.
+     * @since   2.1
      */
     public static String capitalizar(String palabra) {
         String palabraCapitalizada = "";
@@ -77,6 +66,24 @@ public class Tais {
             }
         }
         return palabraCapitalizada;
+    }
+
+
+    /**
+     * Entrega el elemento mayor entre 2 Strings, evaluados como enteros.
+     *
+     * @param   valor1  El primer valor a comparar.
+     * @param   valor2  El segundo valor a comparar.
+     * @return  El mayor de los dos valores.
+     * @since   2.2
+     */
+    public static String mayor(String valor1, String valor2) {
+        int entero1 = Integer.parseInt(valor1);
+        int entero2 = Integer.parseInt(valor2);
+        if (entero1 > entero2) {
+            return valor1;
+        }
+        return valor2;
     }
 
 }
