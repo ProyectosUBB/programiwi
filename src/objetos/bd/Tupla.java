@@ -1,12 +1,14 @@
-package bd;
+package objetos.bd;
 
+
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Set;
 
 /**
  * Abstrae una tupla de la base de tatos como un objeto.
  *
- * @version     2.2.2 (18/05/2018)
+ * @version     2.3.0 (20/05/2018)
  * @author      Anibal Llanos Prado
  */
 public class Tupla {
@@ -16,13 +18,34 @@ public class Tupla {
 
 
     /**
-     * Constructor
+     * Constructor explícito.
      *
      * @param   columnas    Las columnas obtenidas desde la base de datos (con sus valores)
      * @since   2.1
      */
     Tupla(HashMap<String, String> columnas) {
         this.columnas = columnas;
+    }
+
+
+    /**
+     * Constructor desde base de datos.
+     *
+     * @param   nombreTabla El nombre de la tabla sobre la que se desea buscar la tupla.
+     * @param   nombreColumna El nombre de la columna sobre la que se identificará la fila.
+     * @param   valorColumna El valor que la columna debe tener para ser retornada.
+     * @throws  SQLException Error al leer la tabla de ramos en la base de datos.
+     * @since   2.3.0
+     */
+    protected Tupla(String nombreTabla, String nombreColumna, String valorColumna) throws SQLException {
+        Tabla asd = new Tabla(nombreTabla);
+        Tupla tutu = asd.buscarPrimero(nombreColumna, valorColumna);
+        if (tutu != null) {
+            columnas = tutu.obtenerColumnas();
+        } else {
+            columnas = null;
+        }
+        //columnas = new Tabla(nombreTabla).buscarPrimero(nombreColumna, valorColumna).obtenerColumnas();
     }
 
 
@@ -46,7 +69,7 @@ public class Tupla {
      * @return  True si encuentra algún valor que cumpla la condición indicada. False si no.
      * @since   2.1
      */
-    public boolean tiene(String columna, String valor) {
+    protected boolean tiene(String columna, String valor) {
         String resultado = columnas.get(columna);
         if (resultado == null) {
             return false;
@@ -59,10 +82,10 @@ public class Tupla {
      * Determina si el valor almacenado en una columna de la tupla es nulo o no.
      *
      * @param   columna El nombre de la columna que almacena el valor a consultar.
-     * @return  False si se encuentra un valor nulo. True si no.
+     * @return  True si se encuentra un valor nulo. False si no.
      * @since   2.1
      */
-    public boolean tieneNoNulo(String columna) {
+    protected boolean tieneNoNulo(String columna) {
         return columnas.get(columna) != null;
     }
 
@@ -94,6 +117,18 @@ public class Tupla {
      */
     HashMap<String, String> obtenerColumnas() {
         return columnas;
+    }
+
+
+    /**
+     * Determina si la tupla creada realmente existe, es decir, obtuvo datos desde la base
+     * de datos.
+     *
+     * @return  True si encontró datos en la base de datos. False si no.
+     * @since   2.3.0
+     */
+    public boolean existe() {
+        return columnas != null;
     }
 
 }

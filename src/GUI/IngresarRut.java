@@ -4,10 +4,7 @@ import objetos.Alumno;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.sql.SQLException;
+import java.awt.event.*;
 
 import static ayudas.Tais.print;
 
@@ -15,7 +12,7 @@ import static ayudas.Tais.print;
  * Clase vinculada al formulario de ingreso de RUT. Implementa la interacción con el usuario
  * así como la construcción y visualización de la ventana.
  *
- * @version     1.0 (17/05/2018)
+ * @version     1.1 (20/05/2018)
  * @author      Anibal Llanos Prado
  */
 public class IngresarRut {
@@ -44,43 +41,46 @@ public class IngresarRut {
     public IngresarRut() {
 
         /* Escuchador de botón 'salir'. */
-        botonSalir.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+        botonSalir.addActionListener(e -> System.exit(0));
+
+        /* Escuchador de botón 'ingresar'. */
+        botonIngresar.addActionListener(e -> {
+
+            String rut = campoRut.getText();
+            print(rut);
+            if (rut.equals("")) {   /* Mostrar mensaje si el rut está en blanco */
+                etiquetaMensaje.setText(RUT_VACIO);
+                etiquetaMensaje.setVisible(true);
+            } else {
+                try {   /* Intenta crear el alumno para validarlo */
+                    alumno = Alumno.instanciarConRut(rut);
+                    if (alumno != null) {  /* Si el alumno existe */
+                        Object source = e.getSource();
+                        if (source instanceof Component) {  /* Se busca la instancia de la ventana */
+                            Component c = (Component) source;
+                            Frame frame = JOptionPane.getFrameForComponent(c);
+                            if (frame != null) {    /* Si se encuentra, se cierra y se carga la nueva. */
+                                frame.dispose();
+                                new InscribirRamos(alumno).mostrar();
+                            }
+                        }
+                    } else {
+                        etiquetaMensaje.setVisible(true);
+                        etiquetaMensaje.setText(RUT_NO_VALIDO);
+                    }
+                } catch (Exception e1) {
+                    etiquetaMensaje.setVisible(true);
+                    etiquetaMensaje.setText(RUT_NO_VALIDO);
+                }
             }
         });
 
-        /* Escuchador de botón 'ingresar'. */
-        botonIngresar.addActionListener(new ActionListener() {
+        campoRut.addKeyListener(new KeyAdapter() {  /* Para aceptar con el enter */
             @Override
-            public void actionPerformed(ActionEvent e) {
-
-
-                String rut = campoRut.getText();
-                print(rut);
-                if (rut.equals("")) {   /* Mostrar mensaje si el rut está en blanco */
-                    etiquetaMensaje.setText(RUT_VACIO);
-                    etiquetaMensaje.setVisible(true);
-                } else {
-                    try {   /* Intenta crear el alumno para validarlo */
-                        alumno = new Alumno(rut);
-                        if (alumno.existe()) {  /* Si el alumno existe */
-                            Object source = e.getSource();
-                            if (source instanceof Component) {  /* Se busca la instancia de la ventana */
-                                Component c = (Component) source;
-                                Frame frame = JOptionPane.getFrameForComponent(c);
-                                if (frame != null) {    /* Si se encuentra, se cierra y se carga la nueva. */
-                                    frame.dispose();
-                                    new InscribirRamos(alumno).mostrar();
-                                }
-                            }
-                        } else {
-                            etiquetaMensaje.setText(RUT_NO_VALIDO);
-                        }
-                    } catch (SQLException e1) {
-                        e1.printStackTrace();
-                    }
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+                if (e.getKeyCode() == 10) {
+                    botonIngresar.doClick();
                 }
             }
         });

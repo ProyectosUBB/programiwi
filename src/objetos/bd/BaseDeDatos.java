@@ -1,4 +1,4 @@
-package bd;
+package objetos.bd;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import static ayudas.Tais.print;
  * @version     2.2 (18/05/2018)
  * @author      Anibal Llanos Prado
  */
-public class BaseDeDatos {
+class BaseDeDatos {
 
     /* FORMATOS DE CONSULTAS */
     private final String FORMATO_INSERTAR = "INSERT INTO `%s` (%s) VALUES (%s)";

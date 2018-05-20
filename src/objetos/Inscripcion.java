@@ -6,47 +6,42 @@ import java.util.ArrayList;
 import static ayudas.Tais.print;
 
 /**
- * Objeto que permite almacenar tanto a un alumno como los ramos que se vayan inscribiendo, haciendo
- * de nexo entre el alumno (y su historial) y la base de datos, tanto para leer como para escribir.
+ * Objeto que permite almacenar los ramos que se vayan inscribiendo. En el futuro se deberá implementar
+ * una interfaz para rellenar JList en la interfaz.
  *
- * @version     2.1.4 (18/05/2018)
+ * @version     2.2.0 (20/05/2018)
  * @author      Anibal Llanos Prado
  */
 public class Inscripcion {
 
     /* Variables de instancia */
-    private Alumno alumno;
     private ArrayList<Ramo> inscripcion;
 
 
     /**
      * Constructor
      *
-     * @param   rut El rut del usuario al cual se desea inscribir ramos.
-     * @throws  SQLException Errores al consultar información en la base de datos.
      * @since   2.1.4
      */
-    public Inscripcion(String rut) throws SQLException {
-        alumno = new Alumno(rut);
+    public Inscripcion() {
         inscripcion = new ArrayList<>();
     }
 
 
     /**
      * Inscribe un ramo (no persistente si no se finaliza la sesión), en su versión que recibe el código del ramo.
+     * TODO Verificación del ramo en inscripción anterior (en interfaz).
      *
      * @param   codigo El código del ramo por inscribir.
      * @throws  SQLException Errores al buscar un ramo en la base de datos.
      * @since   2.1
      */
     public void inscribir(String codigo) throws SQLException {
-        Ramo ramo = new Ramo(codigo);
-        if (!ramo.existe()) {
+        Ramo ramo = Ramo.instanciarConCodigo(codigo);
+        if (ramo == null) {
             print("El ramo ingresado no existe en la lista de ramos ofertados.");
         } else if (enListaDeIscripcion(codigo)) {
             print("El ramo ya se encuentra en la lista actual de inscripción.");
-        } else if (alumno.tieneRamoInscrito(codigo)) {
-            print("El alumno ya ha cursado previamente el ramo.");
         } else {
             inscripcion.add(ramo);
             print("Se ha inscrito con éxito el ramo: " + ramo);
@@ -57,10 +52,9 @@ public class Inscripcion {
     /**
      * Guarda la inscripción en curso en la base de datos (persistente).
      *
-     * @throws  SQLException Errores al guardar datos en la base de datos.
      * @since   2.1
      */
-    public void guardarInscripcion() throws SQLException {
+    public void guardarInscripcion() {
         if (inscripcion.size() == 0) {  /* No hacemos nada si no hay ramos */
             print("La inscripción actual no posee ramos.");
         }
@@ -68,7 +62,6 @@ public class Inscripcion {
             ramo.convertirEnTabla().insertar();
         }
         vaciar();   /* Refrescamos la inscripción y al alumno */
-        alumno.actualizar();
     }
 
 
@@ -117,17 +110,6 @@ public class Inscripcion {
             return salida.toString();
         }
         return "Aun no se han inscrito ramos para el alumno en cuestión.";
-    }
-
-
-    /**
-     * Getter del alumno.
-     *
-     * @return  El alumno.
-     * @since   2.1.3
-     */
-    public Alumno obtenerAlumno() {
-        return alumno;
     }
 
 }

@@ -1,11 +1,14 @@
 package GUI;
 
-import bd.Tabla;
-import bd.Tupla;
+import objetos.bd.Tabla;
+import objetos.bd.Tupla;
 import objetos.Alumno;
+import objetos.Ramo;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 
 import static ayudas.Tais.ANO_ACTUAL;
@@ -16,7 +19,7 @@ import static ayudas.Tais.capitalizarTodo;
  * Clase vinculada al formulario de inscribir ramos. Implementa la interacción con el usuario
  * así como la construcción y visualización de la ventana.
  *
- * @version     1.1 (18/05/2018)
+ * @version     1.2.1 (20/05/2018)
  * @author      Anibal Llanos Prado
  */
 public class InscribirRamos {
@@ -26,13 +29,18 @@ public class InscribirRamos {
     private JLabel etiquetaRut;
     private JLabel etiquetaNombre;
     private JLabel etiquetaCarrera;
-    private JList<String> inscripcionAnteriorLista;
     private JLabel fechaEtiqueta;
     private JLabel estadoEtiqueta;
+    private JButton botonAgregarRamo;
+    private JTextField campoCodigoRamo;
+    private JList<String> inscripcionAnteriorLista;
+    private JList<String> inscripcionLista;
 
     /* Instancias de elementos auxiliares utilizados en la lógica. */
     private Alumno alumno;
     private Tabla inscripcionAnterior;
+    private Tabla ofertaRamos;
+    private DefaultListModel<String> modeloInscripcion;
 
 
     /**
@@ -41,8 +49,36 @@ public class InscribirRamos {
      * @param   alumno  El alumno obtenido desde la ventana anterior (captura y validación de RUT.
      * @since   1.0
      */
-    InscribirRamos(Alumno alumno) {
+    InscribirRamos(Alumno alumno) throws SQLException {
         this.alumno = alumno;
+        ofertaRamos = new Tabla("ramos");
+
+        botonAgregarRamo.addActionListener(e -> {
+            String codigo = campoCodigoRamo.getText();
+            if (ofertaRamos.tiene("codigo", codigo)) {
+                if (!inscripcionAnterior.tiene("codigo", codigo)) {
+                    try {
+                        Ramo ramo = Ramo.instanciarConCodigo(codigo);
+                        if (ramo != null) {
+                            modeloInscripcion.addElement(ramo.toString());
+                            campoCodigoRamo.setText("");
+                        }
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        campoCodigoRamo.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+                if (e.getKeyCode() == 10) {
+                    botonAgregarRamo.doClick();
+                }
+            }
+        });
     }
 
 
@@ -51,7 +87,7 @@ public class InscribirRamos {
      *
      * @since   1.0
      */
-    void mostrar() {
+    void mostrar() throws SQLException {
 
         /* Tamaño y posición de la pantalla */
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -74,13 +110,14 @@ public class InscribirRamos {
 
 
     /**
-     * Construye un modelo para utilizar la lista de ramos en la interfaz.
+     * Construye un modelo para representar los elementos de la lista de inscri´ci+on anterior. La
+     * lista es generada con los valores correspondientes a su inscripción anterior.
      *
-     * @return  Un modelo (con strings) para manipular la lista de ramos.
-     * @throws  SQLException Error al consultar la inscripción en la base de datos.
-     * @since   1.0
+     * @return  El modelo de la lista, con los elementos previamente insertados.
+     * @throws  SQLException Error al buscar el ramo en la base de datos.
+     * @since   1.2
      */
-    private DefaultListModel<String> modelList() throws SQLException {
+    private DefaultListModel<String> modeloInscripcionAnterior() throws SQLException {
         Tabla ramos = new Tabla("ramos");
         DefaultListModel<String> model = new DefaultListModel<>();
         Tupla tuplaRamo;
@@ -103,12 +140,12 @@ public class InscribirRamos {
         /* Carrera related */
         Tabla carrera = new Tabla("carrera");
         Tabla usuarioTieneCarrera = new Tabla("usuario_tiene_carrera");
-        Tupla tuplaCarreraUsuario = usuarioTieneCarrera.buscarPrimero("usuario_rut", alumno.columna("rut"));
+        Tupla tuplaCarreraUsuario = usuarioTieneCarrera.buscarPrimero("usuario_rut", alumno.valor("rut"));
         Tupla tuplaCarrera = carrera.buscarPrimero("codigo", tuplaCarreraUsuario.valor("carrera_codigo"));
 
         /* Inscripción anterior */
         inscripcionAnterior = new Tabla("inscripciones_ramos");
-        inscripcionAnterior.filtrarTuplas("usuario_rut", alumno.columna("rut"));
+        inscripcionAnterior.filtrarTuplas("usuario_rut", alumno.valor("rut"));
         inscripcionAnterior.filtrarMaximo("ano");
         inscripcionAnterior.filtrarMaximo("semestre");
         String semestre = inscripcionAnterior.otenerPrimeraTupla().valor("semestre");
@@ -119,7 +156,7 @@ public class InscribirRamos {
         etiquetaNombre = new JLabel();
         fechaEtiqueta = new JLabel();
         estadoEtiqueta = new JLabel();
-        etiquetaRut.setText(alumno.columna("rut"));
+        etiquetaRut.setText(alumno.valor("rut"));
         etiquetaNombre.setText(alumno.nombreCompleto());
         etiquetaCarrera = new JLabel();
 
@@ -137,7 +174,10 @@ public class InscribirRamos {
 
         /* Listas */
         inscripcionAnteriorLista = new JList<>();
-        inscripcionAnteriorLista.setModel(modelList());
+        inscripcionAnteriorLista.setModel(modeloInscripcionAnterior());
+        inscripcionLista = new JList<>();
+        modeloInscripcion = new DefaultListModel<>();
+        inscripcionLista.setModel(modeloInscripcion);
     }
 
 

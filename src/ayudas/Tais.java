@@ -1,8 +1,5 @@
 package ayudas;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-
 /**
  * Clase auxiliar TAIS
  * Dota de constantes y métodos estáticos, a lo largo de la aplicación. Su propósito es

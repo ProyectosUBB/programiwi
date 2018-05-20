@@ -1,4 +1,4 @@
-package bd;
+package objetos.bd;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import static ayudas.Tais.mayor;
  * de tuplas, independientemente si viene desde la base de datos es creada desde una lista de tuplas
  * previamente obtenida.
  *
- * @version     2.3.2 (18/05/2018)
+ * @version     2.3.3 (20/05/2018)
  * @author      Anibal Llanos Prado
  */
 public class Tabla {
@@ -35,7 +35,9 @@ public class Tabla {
         tuplas = new ArrayList<>();
         this.nombre = nombre;
         String consulta = "SELECT * FROM `" + nombre + "`";
-        cargarTuplas(bd.consultar(consulta));
+        for (HashMap<String, String> tupla : bd.consultar(consulta)) {
+            tuplas.add(new Tupla(tupla));
+        }
     }
 
 
@@ -54,19 +56,6 @@ public class Tabla {
     public Tabla(String nombre, ArrayList<Tupla> tuplas) {
         this.tuplas = tuplas;
         this.nombre = nombre;
-    }
-
-
-    /**
-     * Método auxiliar para cargar una lista de tuplas (en forma de HashMap) en la tabla.
-     *
-     * @param   resultado   El resultado de una consulta a la base de datos previamente ejecutada.
-     * @since   2.1
-     */
-    private void cargarTuplas(ArrayList<HashMap<String, String>> resultado) {
-        for (HashMap<String, String> tupla : resultado) {
-            tuplas.add(new Tupla(tupla));
-        }
     }
 
 
