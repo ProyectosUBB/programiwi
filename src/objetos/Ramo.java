@@ -1,10 +1,8 @@
 package objetos;
 
-import objetos.bd.Tabla;
 import objetos.bd.Tupla;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import static ayudas.Tais.capitalizarTodo;
 
@@ -52,20 +50,6 @@ public class Ramo extends Tupla {
      */
     boolean tieneCodigo(String codigo) {
         return tiene("codigo", codigo);
-    }
-
-
-    /**
-     * Convierte el ramo en una tabla. Esto permite interactuar con la base de datos utilizando los
-     * objetos del programa (abstracción).
-     *
-     * @return  Una tabla con 1 tupla, el ramo.
-     * @since   2.1
-     */
-    Tabla convertirEnTabla() {
-        ArrayList<Tupla> tuplas = new ArrayList<>();
-        tuplas.add(this);
-        return new Tabla("ramos", tuplas);
     }
 
 
