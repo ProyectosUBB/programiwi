@@ -1,5 +1,7 @@
 package objetos;
 
+import objetos.bd.Tabla;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -59,7 +61,7 @@ public class Inscripcion {
             print("La inscripción actual no posee ramos.");
         }
         for (Ramo ramo : inscripcion) {
-            ramo.convertirEnTabla().insertar();
+            new Tabla("ramos", ramo).insertar();
         }
         vaciar();   /* Refrescamos la inscripción y al alumno */
     }

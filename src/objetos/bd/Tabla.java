@@ -13,7 +13,7 @@ import static ayudas.Tais.mayor;
  * de tuplas, independientemente si viene desde la base de datos es creada desde una lista de tuplas
  * previamente obtenida.
  *
- * @version     2.3.3 (20/05/2018)
+ * @version     2.3.4 (20/05/2018)
  * @author      Anibal Llanos Prado
  */
 public class Tabla {
@@ -56,6 +56,20 @@ public class Tabla {
     public Tabla(String nombre, ArrayList<Tupla> tuplas) {
         this.tuplas = tuplas;
         this.nombre = nombre;
+    }
+
+
+    /**
+     * Constructor desde un elemento.
+     * Esto tiene sentido de momento que la clase Tabla se ha convertido en el mantenedor de la base
+     * de datos. Crea una nueva tabla con sólo 1 tupla, útil para la inserción.
+     *
+     * @param   nombre Nombre que tendrá la tabla.
+     * @param   tupla La tupla que se desea incorporar.
+     */
+    public Tabla(String nombre, Tupla tupla) {
+        this(nombre, new ArrayList<>());
+        tuplas.add(tupla);
     }
 
 
