@@ -10,10 +10,13 @@ import static ayudas.Tais.capitalizar;
  * Representa a un alumno. Los alumnos podrían tener ramos inscritos en el pasado. Su información
  * se encuentra almacenada en una Tupla, que perfectamente podría venir desde la base de datos.
  *
- * @version     2.2.0 (20/05/2018)
+ * @version     2.2.1 (20/05/2018)
  * @author      Anibal Llanos Prado
  */
 public class Alumno extends Tupla {
+
+    /* Variables de instancia. */
+    private Tupla carrera;
 
 
     /**
@@ -25,6 +28,15 @@ public class Alumno extends Tupla {
      */
     private Alumno(String rut) throws SQLException {
         super("usuario", "rut", rut);
+        Tupla alumnoTieneCarrera =
+                Tupla.instanciarDesdeBaseDeDatos("usuario_tiene_carrera", "usuario_rut", rut);
+        if (alumnoTieneCarrera != null) {
+            carrera = Tupla.instanciarDesdeBaseDeDatos(
+                    "carrera",
+                    "codigo",
+                    alumnoTieneCarrera.valor("carrera_codigo")
+            );
+        }
     }
 
 
@@ -55,6 +67,18 @@ public class Alumno extends Tupla {
      */
     public String toString() {
         return valor("rut") + "  " + nombreCompleto() + "  (" + valor("email") + ")";
+    }
+
+
+    /**
+     * Getter para los elementos de la carrera.
+     *
+     * @param   columna La columna (de la tabla) que se desea consultar.
+     * @return  El calor almacenado en la columna consultada.
+     * @since   2.2.1
+     */
+    public String carrera(String columna) {
+        return carrera.valor(columna);
     }
 
 

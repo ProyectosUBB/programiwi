@@ -137,6 +137,7 @@
                     </constraints>
                     <properties>
                       <font size="16"/>
+                      <selectionMode value="0"/>
                     </properties>
                   </component>
                 </children>
@@ -253,6 +254,7 @@
                         </constraints>
                         <properties>
                           <font size="16"/>
+                          <selectionMode value="0"/>
                         </properties>
                       </component>
                     </children>
@@ -267,7 +269,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="24805" class="javax.swing.JTextField" binding="campoCodigoRamo">
+                  <component id="24805" class="javax.swing.JTextField" binding="campoCodigoRamo" custom-create="true">
                     <constraints>
                       <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                         <preferred-size width="150" height="40"/>
@@ -314,7 +316,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="df860" class="javax.swing.JButton">
+                      <component id="df860" class="javax.swing.JButton" binding="botonEliminarRamo" custom-create="true">
                         <constraints>
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -334,15 +336,15 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="6a0d5" class="javax.swing.JButton">
+                      <component id="6a0d5" class="javax.swing.JButton" binding="botonListarRamos">
                         <constraints>
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <font size="14"/>
-                          <label value="Buscar ramo"/>
+                          <label value="Listar ramos"/>
                           <margin top="6" left="20" bottom="6" right="20"/>
-                          <text value="Buscar ramo"/>
+                          <text value="Listar ramos"/>
                         </properties>
                       </component>
                     </children>
@@ -355,7 +357,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="f34e2" class="javax.swing.JButton">
+                      <component id="f34e2" class="javax.swing.JButton" binding="botonInscribirRamos" custom-create="true">
                         <constraints>
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -370,7 +372,7 @@
                   </grid>
                 </children>
               </grid>
-              <component id="4c4fb" class="javax.swing.JButton" binding="botonAgregarRamo">
+              <component id="4c4fb" class="javax.swing.JButton" binding="botonAgregarRamo" custom-create="true">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -397,7 +399,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="73a12" class="javax.swing.JButton">
+          <component id="73a12" class="javax.swing.JButton" binding="botonSalir">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>

@@ -5,6 +5,7 @@ import objetos.bd.Tupla;
 import java.sql.SQLException;
 
 import static ayudas.Tais.capitalizarTodo;
+import static ayudas.Tais.print;
 
 /**
  * Representación de un ramo, el cual es en sí una tupla, pero con un par de cosas adicionales.
@@ -41,19 +42,6 @@ public class Ramo extends Tupla {
     }
 
 
-    /**
-     * Determina si el código del ramo es igual al que se indica a través de los parámetros.
-     *
-     * @param   codigo El código contra el cual se comparará.
-     * @return  True si el código entregado y el almacenado son iguales. False si no.
-     * @since   2.1
-     */
-    boolean tieneCodigo(String codigo) {
-        return tiene("codigo", codigo);
-    }
-
-
-
     /*
      *  CONSTRUCTORES ESTÁTICOS
      *  Protegen a las clases que utilizan los objetos de obtener instancias inválidas
@@ -76,6 +64,7 @@ public class Ramo extends Tupla {
         if (nuevoRamo.existe()) {
             return nuevoRamo;
         }
+        print("[" + codigo + "] no existe!");
         return null;
     }
 

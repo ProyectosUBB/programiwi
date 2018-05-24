@@ -13,11 +13,12 @@ import static ayudas.Tais.mayor;
  * de tuplas, independientemente si viene desde la base de datos es creada desde una lista de tuplas
  * previamente obtenida.
  *
- * @version     2.3.4 (20/05/2018)
+ * @version     2.3.6 (24/05/2018)
  * @author      Anibal Llanos Prado
  */
 public class Tabla {
 
+    /* Variables de instancia */
     private ArrayList<Tupla> tuplas;
     private String nombre;
     private BaseDeDatos bd;
@@ -36,7 +37,7 @@ public class Tabla {
         this.nombre = nombre;
         String consulta = "SELECT * FROM `" + nombre + "`";
         for (HashMap<String, String> tupla : bd.consultar(consulta)) {
-            tuplas.add(new Tupla(tupla));
+            tuplas.add(Tupla.instanciarDesdeHashMap(tupla));
         }
     }
 
@@ -53,23 +54,10 @@ public class Tabla {
      *
      * @since   2.3.2
      */
-    public Tabla(String nombre, ArrayList<Tupla> tuplas) {
+    public Tabla(String nombre, ArrayList<Tupla> tuplas) throws SQLException {
         this.tuplas = tuplas;
         this.nombre = nombre;
-    }
-
-
-    /**
-     * Constructor desde un elemento.
-     * Esto tiene sentido de momento que la clase Tabla se ha convertido en el mantenedor de la base
-     * de datos. Crea una nueva tabla con sólo 1 tupla, útil para la inserción.
-     *
-     * @param   nombre Nombre que tendrá la tabla.
-     * @param   tupla La tupla que se desea incorporar.
-     */
-    public Tabla(String nombre, Tupla tupla) {
-        this(nombre, new ArrayList<>());
-        tuplas.add(tupla);
+        bd = new BaseDeDatos();
     }
 
 
@@ -158,6 +146,29 @@ public class Tabla {
 
 
     /**
+     * Agrega una tupla a la tabla.
+     *
+     * @param   tupla La tupla que se desea agregar.
+     * @since   2.1
+     */
+    public void agregarTupla(Tupla tupla) {
+        tuplas.add(tupla);
+    }
+
+
+    /**
+     * Elimina la tupla que se encuentre en cierta posición.
+     *
+     * @param   posicion La posición que tiene la tupla en la tabla.
+     */
+    public void eliminarTupla(int posicion) {
+        if (posicion < tuplas.size()) {
+            tuplas.remove(posicion);
+        }
+    }
+
+
+    /**
      * Indica si es que la tabla tiene almacenada alguna tupla que cumpla la condición de que el
      * valor almacenado sea igual al valor indicado como parámetro.
      *
@@ -196,6 +207,16 @@ public class Tabla {
 
 
     /**
+     * Entrega la cantidad de tuplas que tenga actualmente la tabla.
+     *
+     * @return El número de tuplas de la tabla.
+     */
+    public int contarTuplas() {
+        return tuplas.size();
+    }
+
+
+    /**
      * Getter de la lista de tuplas.
      *
      * @return  Una lista con las tuplas de la tabla.
@@ -203,6 +224,21 @@ public class Tabla {
      */
     public ArrayList<Tupla> obtenerTuplas() {
         return tuplas;
+    }
+
+
+    /**
+     * Obtiene una tupla de la tabla, ubicada en cierta posición.
+     *
+     * @param   posicion La posición de la tupla en la tabla.
+     * @return  La tupla solicitada.
+     * @since   2.3.6
+     */
+    public Tupla obtenerTupla(int posicion) {
+        if (tuplas.size() > posicion) {
+            return tuplas.get(posicion);
+        }
+        return null;
     }
 
 

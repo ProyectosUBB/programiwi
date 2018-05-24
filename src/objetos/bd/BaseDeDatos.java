@@ -13,13 +13,10 @@ import static ayudas.Tais.print;
  * a través de SQL.
  * PUEDE SER IMPLEMENTADA CON PATRON BUILDER!!!
  *
- * @version     2.2 (18/05/2018)
+ * @version     2.2.1 (24/05/2018)
  * @author      Anibal Llanos Prado
  */
 class BaseDeDatos {
-
-    /* FORMATOS DE CONSULTAS */
-    private final String FORMATO_INSERTAR = "INSERT INTO `%s` (%s) VALUES (%s)";
 
     /* VARIABLES DE INSTANCIA */
     private Connection conexion;
@@ -114,20 +111,21 @@ class BaseDeDatos {
         if (tuplas.size() == 0) {
             print("Se ha intentado insertar una tabla sin tuplas en la base de datos.");
         } else {
-            StringBuilder columnasArreglo = new StringBuilder();
-            StringBuilder valoresArreglo = new StringBuilder();
             HashMap<String, String> tuplaMapa;
             for (Tupla tupla : tuplas) {    /* Iterar sobre las tuplas */
                 tuplaMapa = tupla.obtenerColumnas();
+                StringBuilder columnasArreglo = new StringBuilder();
+                StringBuilder valoresArreglo = new StringBuilder();
                 for (Map.Entry<String, String> entrada : tuplaMapa.entrySet()) {    /*Iterar sobre las columnas. */
                     columnasArreglo.append(",`").append(entrada.getKey()).append("`");
                     valoresArreglo.append(",'").append(entrada.getValue()).append("'");
                 }
+                String FORMATO_INSERTAR = "INSERT INTO `%s` (%s) VALUES (%s)";
                 String consulta = String.format(    /* Se construye la consulta usando el formato de inserción. */
                         FORMATO_INSERTAR,
                         tabla.obtenerNombre(),
-                        columnasArreglo.toString(),
-                        valoresArreglo.toString()
+                        columnasArreglo.toString().substring(1),
+                        valoresArreglo.toString().substring(1)
                 );
                 if (actualizar(consulta)) {     /* Se ejecuta la consulta y se incrementan los contadores. */
                     ++tuplasInsertadas;

@@ -8,7 +8,7 @@ import java.util.Set;
 /**
  * Abstrae una tupla de la base de tatos como un objeto.
  *
- * @version     2.3.0 (20/05/2018)
+ * @version     2.3.2 (24/05/2018)
  * @author      Anibal Llanos Prado
  */
 public class Tupla {
@@ -23,7 +23,7 @@ public class Tupla {
      * @param   columnas    Las columnas obtenidas desde la base de datos (con sus valores)
      * @since   2.1
      */
-    Tupla(HashMap<String, String> columnas) {
+    private Tupla(HashMap<String, String> columnas) {
         this.columnas = columnas;
     }
 
@@ -38,14 +38,12 @@ public class Tupla {
      * @since   2.3.0
      */
     protected Tupla(String nombreTabla, String nombreColumna, String valorColumna) throws SQLException {
-        Tabla asd = new Tabla(nombreTabla);
-        Tupla tutu = asd.buscarPrimero(nombreColumna, valorColumna);
-        if (tutu != null) {
-            columnas = tutu.obtenerColumnas();
+        Tupla tupla = new Tabla(nombreTabla).buscarPrimero(nombreColumna, valorColumna);
+        if (tupla != null) {
+            columnas = tupla.obtenerColumnas();
         } else {
             columnas = null;
         }
-        //columnas = new Tabla(nombreTabla).buscarPrimero(nombreColumna, valorColumna).obtenerColumnas();
     }
 
 
@@ -69,7 +67,7 @@ public class Tupla {
      * @return  True si encuentra algún valor que cumpla la condición indicada. False si no.
      * @since   2.1
      */
-    protected boolean tiene(String columna, String valor) {
+    boolean tiene(String columna, String valor) {
         String resultado = columnas.get(columna);
         if (resultado == null) {
             return false;
@@ -129,6 +127,47 @@ public class Tupla {
      */
     public boolean existe() {
         return columnas != null;
+    }
+
+
+
+    /*
+     *  CONSTRUCTORES ESTÁTICOS
+     *  Protegen a las clases que utilizan los objetos de obtener instancias inválidas
+     *  por errores en las consultas a la base de datos. Permite respetar el contrato
+     *  primordial de esta abstracción de la base de datos: Si no existe, es null.
+     */
+
+
+    /**
+     * Entrega una instancia de Tupla (primer resultado). Si los valores indicados para buscar en la base de datos no arrojan
+     * resultado alguno, se devolverá Null en su lugar.
+     *
+     * @param   tabla Nombre de la tabla en la que se quiere buscar.
+     * @param   columna Nombre de la columna de la tabla que se evaluará.
+     * @param   valor Valor que debe tener la columna para ser una fila válida.
+     * @return  Una tupla que cumple con las condiciones.
+     * @throws  SQLException Error al leer la tabla que se indique.
+     * @since   2.3.1
+     */
+    public static Tupla instanciarDesdeBaseDeDatos(String tabla, String columna, String valor) throws SQLException {
+        Tupla nuevaTupla = new Tupla(tabla, columna, valor);
+        if (nuevaTupla.existe()) {
+            return nuevaTupla;
+        }
+        return null;
+    }
+
+
+    /**
+     * Entrega una instancia de Tupla construida a partir de un HashMap.
+     *
+     * @param   tupla El HashMap que contiene los valores de la tupla.
+     * @return  Una tupla que contiene los elementos indicados como parámetro.
+     * @since   2.3.2
+     */
+    public static Tupla instanciarDesdeHashMap(HashMap<String, String> tupla) {
+        return new Tupla(tupla);
     }
 
 }

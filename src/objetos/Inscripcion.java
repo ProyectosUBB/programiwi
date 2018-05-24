@@ -1,98 +1,100 @@
 package objetos;
 
+import ayudas.Tais;
 import objetos.bd.Tabla;
+import objetos.bd.Tupla;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-
-import static ayudas.Tais.print;
+import java.util.HashMap;
 
 /**
- * Objeto que permite almacenar los ramos que se vayan inscribiendo. En el futuro se deberá implementar
- * una interfaz para rellenar JList en la interfaz.
+ * Clase que abstrae una inscripción académica. Para evitar tener que utilizar 2 variables con datos
+ * se ha creado una vista en la base de datos que entrega información sobre la tabla de ramos, así como
+ * de la tabla de inscripciones.
+ * NOTA: Una inscripción se puede crear desde la base de datos (poblada) o en blanco (nueva inscripción).
  *
- * @version     2.2.0 (20/05/2018)
+ * @version     2.2.2 (24/05/2018)
  * @author      Anibal Llanos Prado
  */
-public class Inscripcion {
+public class Inscripcion  {
+
 
     /* Variables de instancia */
-    private ArrayList<Ramo> inscripcion;
+    private Tabla ramosAlumno;
+    private String rut;
 
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @since   2.1.4
+     * @since   2.1
      */
-    public Inscripcion() {
-        inscripcion = new ArrayList<>();
+    public Inscripcion(String rut, boolean crearEnBlanco) throws SQLException {
+        this.rut = rut;
+        if (crearEnBlanco) {
+            ArrayList<Tupla> tuplas = new ArrayList<>();
+            ramosAlumno = new Tabla("inscripciones_ramos", tuplas);
+        } else {
+            ramosAlumno = new Tabla("inscripciones_ramos");
+            ramosAlumno.filtrarTuplas("usuario_rut", rut);
+        }
     }
 
 
     /**
      * Inscribe un ramo (no persistente si no se finaliza la sesión), en su versión que recibe el código del ramo.
-     * TODO Verificación del ramo en inscripción anterior (en interfaz).
+     * Desde la versión 2.2.1 cambia su implementación para funcionar con la interfaz gráfica.
      *
-     * @param   codigo El código del ramo por inscribir.
-     * @throws  SQLException Errores al buscar un ramo en la base de datos.
-     * @since   2.1
+     * @param   ramo El ramo por inscribir.
+     * @since   2.1.0
      */
-    public void inscribir(String codigo) throws SQLException {
-        Ramo ramo = Ramo.instanciarConCodigo(codigo);
-        if (ramo == null) {
-            print("El ramo ingresado no existe en la lista de ramos ofertados.");
-        } else if (enListaDeIscripcion(codigo)) {
-            print("El ramo ya se encuentra en la lista actual de inscripción.");
-        } else {
-            inscripcion.add(ramo);
-            print("Se ha inscrito con éxito el ramo: " + ramo);
-        }
+    public void agregarRamo(Ramo ramo) {
+        HashMap<String, String> tuplaNueva = new HashMap<>();
+        tuplaNueva.put("usuario_rut", rut);
+        tuplaNueva.put("ramos_codigo", ramo.valor("codigo"));
+        tuplaNueva.put("semestre", Tais.SEMESTRE_ACTUAL);
+        tuplaNueva.put("ano", Tais.ANO_ACTUAL);
+        ramosAlumno.agregarTupla(Tupla.instanciarDesdeHashMap(tuplaNueva));
+    }
+
+
+    public void eliminarRamo(int posicion) {
+        ramosAlumno.eliminarTupla(posicion);
     }
 
 
     /**
-     * Guarda la inscripción en curso en la base de datos (persistente).
+     * Getter del ramo.
      *
-     * @since   2.1
+     * @param   posicion La posición del ramo en la lista.
+     * @return  El ramo que se encuentra en la posición indicada.
+     * @since   2.2.2
      */
-    public void guardarInscripcion() {
-        if (inscripcion.size() == 0) {  /* No hacemos nada si no hay ramos */
-            print("La inscripción actual no posee ramos.");
-        }
-        for (Ramo ramo : inscripcion) {
-            new Tabla("ramos", ramo).insertar();
-        }
-        vaciar();   /* Refrescamos la inscripción y al alumno */
+    public Tupla obtenerRamo(int posicion) {
+        return ramosAlumno.obtenerTupla(posicion);
     }
 
 
     /**
-     * Vacía la lista de ramos en proceso de inscripción.
+     * Determina si la inscripción tiene un ramo previamente inscrito.
      *
-     * @since   2.1
+     * @param   codigo El código del ramo que se desea verificar.
+     * @return  True si el ramo se encuentra previamente inscrito. False si no.
+     * @since   2.2.2
      */
-    private void vaciar() {
-        inscripcion = new ArrayList<>();
-        print("Se ha vaciado la lista de inscripción.");
+    public boolean tieneRamo(String codigo) {
+        return ramosAlumno.tiene("ramos_codigo", codigo);
     }
 
 
     /**
-     * Determina si alguno de los ramos en la inscripción actual tiene el mismo código que el que se
-     * entrega como parámetro.
+     * Llama al método de registrar tabla en la base de datos para insertar la nueva inscripción.
      *
-     * @param   codigo  El código del ramo que se desea verificar.
-     * @return  True si existe un ramo en la inscripción con el código indicado. False si no.
-     * @since   2.1
+     * @since   2.2.2
      */
-    private boolean enListaDeIscripcion(String codigo) {
-        for (Ramo ramo : inscripcion) {
-            if (ramo.tieneCodigo(codigo)) {
-                return true;
-            }
-        }
-        return false;
+    public void inscribir() {
+        ramosAlumno.insertar();
     }
 
 
@@ -104,14 +106,35 @@ public class Inscripcion {
      * @since   2.1
      */
     public String toString() {
-        if (inscripcion.size() > 0) {
-            StringBuilder salida = new StringBuilder("Lista de ramos inscritos:\n");
-            for (Ramo ramo : inscripcion) {
-                salida.append(ramo.toString()).append("\n");
-            }
-            return salida.toString();
+        if (ramosAlumno.contarTuplas() > 0) {
+            return "Lista de ramos inscritos:\n" + ramosAlumno.toString();
         }
         return "Aun no se han inscrito ramos para el alumno en cuestión.";
+    }
+
+
+    /**
+     * Entrega la cantidad de ramos actualmente inscritos.
+     *
+     * @return  La cantidad de ramos inscritos.
+     * @since   2.2.2
+     */
+    public int contarRamosInscripcion() {
+        return ramosAlumno.contarTuplas();
+    }
+
+
+    /**
+     * Entrega una tabla que contiene la última inscripción del alumno (completa). Importante mencionar
+     * que primero se eligen las de el año más alto, y luego las del semestre más alto.
+     *
+     * @return  La última inscripción académica del alumno.
+     */
+    public Tabla obtenerMasRecientes() throws SQLException {
+        Tabla tablaRecientes = new Tabla("ramos_alumno", ramosAlumno.obtenerTuplas());
+        tablaRecientes.filtrarMaximo("ano");
+        tablaRecientes.filtrarMaximo("semestre");
+        return tablaRecientes;
     }
 
 }
