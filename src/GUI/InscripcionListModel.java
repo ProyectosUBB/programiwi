@@ -43,7 +43,7 @@ public class InscripcionListModel extends AbstractListModel {
      * @param   ramo El ramo que se desea inscribir.
      * @since   1.0.0
      */
-    void addElement(Ramo ramo) {
+    void addElement(Ramo ramo) throws SQLException {
         inscripcion.agregarRamo(ramo);
         fireIntervalAdded(
                 this,
@@ -60,7 +60,7 @@ public class InscripcionListModel extends AbstractListModel {
      * @param   posicion La posición del elemento en la lista de ramos a inscribir.
      * @since   1.0.1
      */
-    void removeElement(int posicion) {
+    void removeElement(int posicion) throws SQLException {
         inscripcion.eliminarRamo(posicion);
         fireIntervalRemoved(this, posicion, posicion);
     }

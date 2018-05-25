@@ -14,7 +14,7 @@ import java.util.HashMap;
  * de la tabla de inscripciones.
  * NOTA: Una inscripción se puede crear desde la base de datos (poblada) o en blanco (nueva inscripción).
  *
- * @version     2.2.2 (24/05/2018)
+ * @version     2.2.3 (25/05/2018)
  * @author      Anibal Llanos Prado
  */
 public class Inscripcion  {
@@ -37,7 +37,7 @@ public class Inscripcion  {
             ramosAlumno = new Tabla("inscripciones_ramos", tuplas);
         } else {
             ramosAlumno = new Tabla("inscripciones_ramos");
-            ramosAlumno.filtrarTuplas("usuario_rut", rut);
+            ramosAlumno = ramosAlumno.filtrarTuplas("usuario_rut", rut);
         }
     }
 
@@ -49,18 +49,24 @@ public class Inscripcion  {
      * @param   ramo El ramo por inscribir.
      * @since   2.1.0
      */
-    public void agregarRamo(Ramo ramo) {
+    public void agregarRamo(Ramo ramo) throws SQLException {
         HashMap<String, String> tuplaNueva = new HashMap<>();
         tuplaNueva.put("usuario_rut", rut);
         tuplaNueva.put("ramos_codigo", ramo.valor("codigo"));
         tuplaNueva.put("semestre", Tais.SEMESTRE_ACTUAL);
         tuplaNueva.put("ano", Tais.ANO_ACTUAL);
-        ramosAlumno.agregarTupla(Tupla.instanciarDesdeHashMap(tuplaNueva));
+        ramosAlumno = ramosAlumno.agregarTupla(Tupla.instanciarDesdeHashMap(tuplaNueva));
     }
 
-
-    public void eliminarRamo(int posicion) {
-        ramosAlumno.eliminarTupla(posicion);
+    /**
+     * Elimina un ramo de la inscripción.
+     *
+     * @param   posicion La posición que tiene el ramo en la inscripción.
+     * @throws  SQLException Error al crear tabla nueva.
+     * @since   2.2.2
+     */
+    public void eliminarRamo(int posicion) throws SQLException {
+        ramosAlumno = ramosAlumno.eliminarTupla(posicion);
     }
 
 
@@ -132,8 +138,8 @@ public class Inscripcion  {
      */
     public Tabla obtenerMasRecientes() throws SQLException {
         Tabla tablaRecientes = new Tabla("ramos_alumno", ramosAlumno.obtenerTuplas());
-        tablaRecientes.filtrarMaximo("ano");
-        tablaRecientes.filtrarMaximo("semestre");
+        tablaRecientes = tablaRecientes.filtrarMaximo("ano");
+        tablaRecientes = tablaRecientes.filtrarMaximo("semestre");
         return tablaRecientes;
     }
 

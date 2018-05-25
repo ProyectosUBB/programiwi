@@ -7,6 +7,8 @@ import objetos.bd.Tupla;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
@@ -37,6 +39,7 @@ public class InscribirRamos {
     private JButton botonListarRamos;
     private JButton botonInscribirRamos;
     private JButton botonSalir;
+    private JButton botonModificarInscripcion;
 
     /* Instancias de elementos auxiliares utilizados en la lógica. */
     private Alumno alumno;
@@ -94,7 +97,13 @@ public class InscribirRamos {
 
         /* Escuchador Eliminar Ramo */
         botonEliminarRamo.addActionListener(e ->
-                modeloInscripcionActual.removeElement(inscripcionLista.getSelectedIndex()));
+        {
+            try {
+                modeloInscripcionActual.removeElement(inscripcionLista.getSelectedIndex());
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        });
 
         /* Escuchador Mostrar Lista de Ramos */
         botonListarRamos.addActionListener(e -> {
@@ -130,6 +139,12 @@ public class InscribirRamos {
 
         /* Escuchador Salir */
         botonSalir.addActionListener(e -> System.exit(0));
+        botonModificarInscripcion.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new DialogoMensaje().mostrar("EN CONSTRUCCIÓN", false);
+            }
+        });
     }
 
 
@@ -185,6 +200,7 @@ public class InscribirRamos {
         botonInscribirRamos = new JButton();
         botonEliminarRamo = new JButton();
         botonAgregarRamo = new JButton();
+        botonModificarInscripcion = new JButton();
 
         /* Inscripciones */
         ofertaRamos = new Tabla("ramos");
